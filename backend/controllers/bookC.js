@@ -71,14 +71,15 @@ class bookC {
         limit: parseInt(limit),
         raw: true
       });
-
+  
       data.forEach(d => {
         d.image = `http://localhost:8000/uploads/${d.image}`;
       });
-
+  
       res.json(data);
     } catch (err) {
-      res.json({ success: false, message: err.message });
+      console.error("Error fetching books:", err); // Log the detailed error
+      res.status(500).json({ success: false, message: err.message });
     }
   }
 }

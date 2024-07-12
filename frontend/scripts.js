@@ -31,7 +31,6 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
   }
 });
 
-
 // Handle Login Form Submission
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -76,14 +75,70 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   }
 });
 
+// // Fetch and Display Books
+// async function fetchBooks() {
+//   try {
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//       throw new Error('User is not authenticated');
+//     }
+
+//     const response = await fetch('http://localhost:8000/book', {
+//       headers: {
+//         'Authorization': token
+//       }
+//     });
+    
+//     const books = await response.json();
+
+//     if (!Array.isArray(books)) {
+//       throw new Error('Response is not an array');
+//     }
+
+//     const booksList = document.getElementById('booksList');
+//     booksList.innerHTML = '';
+
+//     books.forEach((book) => {
+//       const bookItem = document.createElement('div');
+//       bookItem.classList.add('book-item');
+//       bookItem.innerHTML = `
+//         <img src="${book.image}" alt="${book.name}" class="book-image">
+//         <h3>${book.name}</h3>
+//         <p>${book.author}</p>
+//         <p>${book.genre}</p>
+//         <p>${book.description}</p>
+//         <button class="order-button" data-book-id="${book.id}">Order</button>
+//       `;
+//       booksList.appendChild(bookItem);
+//     });
+//   } catch (error) {
+//     console.error('Error fetching books:', error);
+//   }
+// }
+
 // Fetch and Display Books
 async function fetchBooks() {
+  console.log('Fetching books...'); // Debugging line
   try {
-    const response = await fetch('http://localhost:8000/book');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await fetch('http://localhost:8000/book', {
+      headers: {
+        'Authorization': token
+      }
+    });
+    
     const books = await response.json();
 
+    if (!Array.isArray(books)) {
+      throw new Error('Response is not an array');
+    }
+
     const booksList = document.getElementById('booksList');
-    booksList.innerHTML = '';
+    booksList.innerHTML = ''; // Clear the existing list
 
     books.forEach((book) => {
       const bookItem = document.createElement('div');
@@ -105,8 +160,10 @@ async function fetchBooks() {
 
 // Check if on Books Page
 if (window.location.pathname.endsWith('books.html')) {
-  fetchBooks();
+  document.addEventListener('DOMContentLoaded', fetchBooks);
 }
+
+
 
 // Handle Add Book Form Submission (For Admins)
 document.getElementById('addBookForm')?.addEventListener('submit', async (e) => {
@@ -118,8 +175,6 @@ document.getElementById('addBookForm')?.addEventListener('submit', async (e) => 
   const bookDescription = document.getElementById('bookDescription').value;
   const bookImage = document.getElementById('bookImage').files[0];
 
-  console.log('Add book form submitted with:', { bookName, bookAuthor, bookGenre, bookDescription, bookImage });
-
   const formData = new FormData();
   formData.append('name', bookName);
   formData.append('author', bookAuthor);
@@ -128,8 +183,12 @@ document.getElementById('addBookForm')?.addEventListener('submit', async (e) => 
   formData.append('image', bookImage);
 
   try {
-    const response = await fetch('http://localhost:8000/book/add', {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:8000/book', {
       method: 'POST',
+      headers: {
+        'Authorization': token,
+      },
       body: formData,
     });
 
