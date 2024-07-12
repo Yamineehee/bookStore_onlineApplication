@@ -1,0 +1,11 @@
+{
+    "port": 8080,
+    "files": ["./*.html", "./*.css", "./*.js"],
+    "server": {
+      "baseDir": "./",
+      "routes": {
+        "/node_modules": "node_modules"
+      }
+    }
+  }
+  
